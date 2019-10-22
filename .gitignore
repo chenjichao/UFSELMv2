@@ -1,0 +1,9 @@
+data/
+logs/
+cache/
+graph/
+*~
+*.asv
+.*
+!.gitignore
+spams/
