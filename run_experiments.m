@@ -278,7 +278,7 @@ else
     L = laplacian(options, X');
 end
 
-labels = uselm_interface(X, size(Y, 1), NN, scale, lambda, hidden_dim, output_dim, normalize, selftune);
+labels = uselm_interface(X, size(Y, 1), L,  lambda, hidden_dim, output_dim, normalize);
 end
 
 %% ------------------------------------------------------------------------
