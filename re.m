@@ -2,7 +2,8 @@ clear
 clc
 
 
-
+addpath(genpath('data'));
+addpath(genpath('graph'));
 [data, gnd] = load_data('WebKBTexas');
 [nSmp, nFtr] = size(data);
 X = normalize(data, 'range', [-1,1]); % same as mapminmax but to columns
@@ -38,8 +39,9 @@ options.GraphWeightParam = 1;
 L = laplacian(options, X);
 normalize = 1;
 
-y = uselm_interface(X, size(Y, 1), L, lambda, nNrn, nOut, normalize); 
+y = uselm_interface(X', nCls, L, lambda, nNrn, nOut, normalize); 
 
+uselm_interface use kmeans instead of litekmeans
 
 ACC = accuracy(Y, y)
 results = zeros(3, 1);
