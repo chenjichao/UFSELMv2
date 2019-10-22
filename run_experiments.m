@@ -263,7 +263,7 @@ selftune = getfield_with_default(params, 'selftune', false);
 
 if selftune
     lapla_norm = getfield_with_default(params, 'lapla_norm', true);
-    [A, ~] = selftuning(X', nNbr);
+    [A, ~] = selftuning(X', NN);
     L = Adjacency2Laplacian(A, lapla_norm);
 else
     options.NN = NN;
