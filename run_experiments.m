@@ -255,11 +255,13 @@ function labels = runUSELM(X, Y, params)
 NN = getfield_with_default(params, 'nNbr', 5);
 scale = getfield_with_default(params, 'scale', 0);
 lambda = getfield_with_default(params, 'lambda', 0); % -4:1:4
-lambda = 10^lambda;
-hidden_dim = getfield_with_default(params, 'hidden_dim', 1024);
-output_dim = getfield_with_default(params, 'output_dim', 32);
-normalize = getfield_with_default(params, 'normalize', true);
+options.lambda = 10^lambda;
+options.NumHiddenNeuron = getfield_with_default(params, 'hidden_dim', 2048);
+options.NE = getfield_with_default(params, 'output_dim', 32);
+options.NormalizeOutput = 0;
+options.NormalizeInput = 0;
 selftune = getfield_with_default(params, 'selftune', false);
+options.Kernel = 'sigmoid';
 
 if selftune
     lapla_norm = getfield_with_default(params, 'lapla_norm', true);
@@ -278,8 +280,9 @@ else
     L = laplacian(options, X');
 end
 
+nCls = size(Y, 1);
 elmModel = uselm(X', L, options);
-[labels, ~] = litekmeans(elmModel.Embed, nCls, 'MaxIter', 100);
+[labels, ~] = litekmeans(elmModel.Embed, nCls, 'MaxIter', 200);
 
 % labels = uselm_interface(X, size(Y, 1), L,  lambda, hidden_dim, output_dim, normalize);
 end
