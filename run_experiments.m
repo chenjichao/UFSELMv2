@@ -278,7 +278,10 @@ else
     L = laplacian(options, X');
 end
 
-labels = uselm_interface(X, size(Y, 1), L,  lambda, hidden_dim, output_dim, normalize);
+elmModel = uselm(X', L, options);
+[labels, ~] = litekmeans(elmModel.Embed, nCls, 'MaxIter', 100);
+
+% labels = uselm_interface(X, size(Y, 1), L,  lambda, hidden_dim, output_dim, normalize);
 end
 
 %% ------------------------------------------------------------------------
