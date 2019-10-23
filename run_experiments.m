@@ -291,33 +291,15 @@ end
 function labels = runELMcLDA(X, Y, params)
 paras.K = size(Y, 1);
 paras.y = Y;
-nNbr = getfield_with_default(params, 'nNbr', 10);
+% nNbr = getfield_with_default(params, 'nNbr', 10);
+
+
 var1 = getfield_with_default(params, 'var1', 6); % -6:1:6
 paras.lambda = 10^var1;
-
-% L = laplacian(options, X');
-% use selftuning
-selftune = getfield_with_default(params, 'selftune', false);
-if selftune
-    lapla_norm = getfield_with_default(params, 'lapla_norm', true);
-    [A, ~] = selftuning(X', nNbr);
-    L = Adjacency2Laplacian(A, lapla_norm);
-else
-    options.NN = getfield_with_default(params, 'nNbr', 10);
-    options.GraphDistanceFunction = getfield_with_default(params, ...
-        'GDF', 'euclidean');
-    options.GraphWeights = getfield_with_default(params, 'GW', 'distance');
-% options.GraphDistanceFunction: 'euclidean' | 'cosine' | 'hamming_distance'
-% options.GraphWeights: 'distance' | 'binary' | 'heat'
-    options.LaplacianNormalize=1;
-    options.LaplacianDegree=1;
-    options.GraphWeightParam = 1;
-    L = laplacian(options, X');
-end
-
 paras.NumHiddenNeuron = getfield_with_default(params, 'nNrn', 1024);
 
-[labels, ~, ~]=elmc_lda(X', paras);
+
+[labels, ~, ~] = elmc_lda(X', paras);
 end
 %% ------------------------------------------------------------------------
 function labels = runELMJEC(X, Y, params)
@@ -326,9 +308,9 @@ nOut = getfield_with_default(params, 'nOut', 32);
 nNbr = getfield_with_default(params, 'nNbr', 10);
 nNrn = getfield_with_default(params, 'nNrn', 1024);
 var1 = getfield_with_default(params, 'var1', 0);
-var1 = 2^var1;
+var1 = 10^var1;
 var2 = getfield_with_default(params, 'var2', 0);
-var2 = 2^var2;
+var2 = 10^var2;
 
 selftune = getfield_with_default(params, 'selftune', false);
 if selftune

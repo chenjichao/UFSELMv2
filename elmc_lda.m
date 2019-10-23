@@ -1,9 +1,9 @@
-function [label,i,cost]=elmc_lda(X,paras)
+function [label, i, cost] = elmc_lda(X, paras)
 
 
-[N,d]=size(X);
-K=paras.K;
-l=paras.NumHiddenNeuron;
+[N, d]=size(X);
+K = paras.K;
+l = paras.NumHiddenNeuron;
 
 
 % Random generate input weights and random bias
@@ -15,19 +15,16 @@ tempH = bsxfun(@plus,tempH,elmModel.Bias);
 
 % Calculate hidden neuron output matrix
 H = 1 ./ (1 + exp(-tempH));
-
 % shift data
-H=bsxfun(@minus,H,mean(H,1));
-St=H'*H;
+H = bsxfun(@minus,H,mean(H,1));
+St = H'*H;
 
-[label, center] = litekmeans(H, paras.K, 'MaxIter',200);
+[label, ~] = litekmeans(H, paras.K, 'MaxIter',200);
 % acc_tmp=accuracy(paras.y,label);
 
 
 MaxIter=50;
 for i=1:MaxIter
-    
-    
     for iK=1:K
         nK(iK)=sum(label==iK);
         Mu(iK,:)=mean(H(label==iK,:),1);
@@ -55,7 +52,7 @@ for i=1:MaxIter
     [label, ~] = litekmeans(Hs, K, 'MaxIter',200,'Start', initcenter);
     
 %     acc_tmp(i)=accuracy(paras.y,label);
-    if label==label0;
+    if label == label0
         disp(['Algorithm converges at iteration: ',num2str(i)]);
         break;
     end

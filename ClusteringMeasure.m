@@ -51,7 +51,6 @@ Purity = correnum/length(predY);
 res = bestMap(Y, predY);
 % accuarcy
 ACC = length(find(Y == res))/length(Y);
-
 % NMI
 MIhat = MutualInfo(Y,res);
 
@@ -151,7 +150,7 @@ function [C,T]=hungarian(A)
 % Mathematical Software, 6(1):104-111, 1980.
 
 % v1.0  96-06-14. Niclas Borlin, niclas@cs.umu.se.
-%                 Department of Computing Science, Umeï¿½ University,
+%                 Department of Computing Science, Umeå University,
 %                 Sweden. 
 %                 All standard disclaimers apply.
 
