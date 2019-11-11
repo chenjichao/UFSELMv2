@@ -59,11 +59,11 @@ fprintf('Dataset statistics of %s:\n', dataset_name);
 fprintf('num_clusters: %d\n', size(Y, 1));
 fprintf('num_features: %d\n', size(X, 1));
 fprintf('num_samples:  %d\n\n', size(X, 2));
-if permdata
-    perm = randperm(size(X, 2));
-    X = X(:, perm);
-    Y = Y(:, perm);
-end
+% if permdata
+%     perm = randperm(size(X, 2));
+%     X = X(:, perm);
+%     Y = Y(:, perm);
+% end
 
 % normalization
 X = normalize(X', 'range', [-1,1]); % same as mapminmax but to columns
@@ -225,10 +225,46 @@ var2 = getfield_with_default(params, 'var2', -6);
 var2 = 10^var2;
 % nCls = length(unique(Y));
 nCls = size(Y, 1);
+save('temp1', 'X');
 [~, F] = UFSELM(X', L, nCls, var1, var2, nNrn);
 [~, labels] = max(F,[],2);
 end
 
+%% ------------------------------------------------------------------------
+function labels = runUFSELML2(X, Y, params)
+
+nNbr = getfield_with_default(params, 'nNbr', 10);
+
+selftune = getfield_with_default(params, 'selftune', false);
+
+if selftune
+    lapla_norm = getfield_with_default(params, 'lapla_norm', true);
+    [A, ~] = selftuning(X', nNbr);
+    L = Adjacency2Laplacian(A, lapla_norm);
+else
+    options.NN = nNbr;
+    options.GraphDistanceFunction = getfield_with_default(params, ...
+        'GDF', 'euclidean');
+% options.GraphDistanceFunction: 'euclidean' | 'cosine'
+    options.GraphWeights = getfield_with_default(params, 'GW', 'distance');
+% options.GraphWeights: 'distance' | 'heat'
+    options.LaplacianNormalize=1;
+    options.LaplacianDegree=1;
+    options.GraphWeightParam = 1;
+    L = laplacian(options, X');
+end
+
+nNrn = getfield_with_default(params, 'nNrn', 1024);
+var1 = getfield_with_default(params, 'var1', 6);
+var1 = 10^var1;
+var2 = getfield_with_default(params, 'var2', -6);
+var2 = 10^var2;
+% nCls = length(unique(Y));
+nCls = size(Y, 1);
+save('temp1', 'X');
+[~, F] = UFSELML2(X', L, nCls, var1, var2, nNrn);
+[~, labels] = max(F,[],2);
+end
 %% ------------------------------------------------------------------------
 function labels = runSC(X, Y, params)
 % Run spectral clustering.
@@ -336,33 +372,3 @@ nCls = size(Y, 1);
 [~, labels] = max(F,[],2);
 end
 
-%% ------------------------------------------------------------------------
-function labels = runUFSELML2(X, Y, params)
-
-options.NN = getfield_with_default(params, 'nNbr', 10);
-
-options.GraphDistanceFunction = getfield_with_default(params, ...
-    'GDF', 'euclidean');
-options.GraphWeights = getfield_with_default(params, 'GW', 'distance');
-% options.GraphDistanceFunction: 'euclidean' | 'cosine' | 'hamming_distance'
-% options.GraphWeights: 'distance' | 'binary' | 'heat'
-options.LaplacianNormalize=1;
-options.LaplacianDegree=1;
-options.GraphWeightParam = 1;
-
-% L = laplacian(options, X');
-% use selftuning
-lapla_norm = getfield_with_default(params, 'lapla_norm', true);
-[A, ~] = selftuning(X', options.NN);
-L = Adjacency2Laplacian(A, lapla_norm);
-
-nNrn = getfield_with_default(params, 'nNrn', 1024);
-var1 = getfield_with_default(params, 'var1', 6);
-var1 = 10^var1;
-var2 = getfield_with_default(params, 'var2', -6);
-var2 = 10^var2;
-% nCls = length(unique(Y));
-nCls = size(Y, 1);
-[~, F] = UFSELM(X', L, nCls, var1, var2, nNrn);
-[~, labels] = max(F,[],2);
-end
