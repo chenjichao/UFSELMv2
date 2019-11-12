@@ -30,8 +30,9 @@ end
 F = F*((F'*F)^(-1/2));
 %%%%%%% Init B as an identity matrix and compute Q
 B = eye(nNrn);
+I = eye(nNrn);
 % Q = (H'*H + lambda1*B + lambda2*H'*L*H);
-Q = (H'*H + lambda1 + lambda2*H'*L*H);
+Q = (H'*H + lambda1*I + lambda2*H'*L*H);
 
 %% Repeat
 for iter = 1:itermax
@@ -43,7 +44,7 @@ for iter = 1:itermax
 %         B(i, i) = (norm(beta(i,:))+1e-30)^-1;
 %     end
 %     Q = (H'*H + lambda1*B + lambda2*H'*L*H);
-    Q = (H'*H + lambda1 + lambda2*H'*L*H);
+    Q = (H'*H + lambda1*I + lambda2*H'*L*H);
     %%%% Calculate P ------------------------------------------------------
 %     P = eye(nSmp) - 2*H/Q*H' + (H/Q)*((H'*H) + lambda1*B + lambda2*H'*L*H)*(Q\H');
 %     P = eye(nSmp) - 2*H/Q*H' + (H/Q)*(Q)*(Q\H');
