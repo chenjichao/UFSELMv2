@@ -43,7 +43,8 @@ for jj = 1:length(h)
     for ii = 1:length(idx)-1
         cnt = cnt + 1;
         if (jj == max_loc(2)) && (ii == max_loc(1))
-            facecolor = 'red';
+%             facecolor = 'red';
+            facecolor = cm(jj*dv,:);
         else
             facecolor = cm(jj*dv,:);
         end
@@ -56,12 +57,15 @@ end
 
 % add accuracy values
 [xloc, yloc] = meshgrid(1:size(grid, 2), 1:size(grid, 1));
-text(xloc(:), yloc(:), grid(:), num2str(grid(:), '%.4f'), ...
-    'HorizontalAlignment', 'center', ...
-    'VerticalAlignment', 'bottom');
-xlabel(varx);
-ylabel(vary);
-zlabel('accuracy');
+% text(xloc(:), yloc(:), grid(:), num2str(grid(:), '%.4f'), ...
+%     'HorizontalAlignment', 'center', ...
+%     'VerticalAlignment', 'bottom');
+xlabel('log_{10}\lambda_2');
+ylabel('log_{10}\lambda_1');
+zlim([0 1]);
+% xlabel(varx);
+% ylabel(vary);
+% zlabel('accuracy');
 xticklabels(split(num2str(gridx)));
 yticklabels(split(num2str(gridy)));
 end
