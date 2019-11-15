@@ -225,7 +225,6 @@ var2 = getfield_with_default(params, 'var2', -6);
 var2 = 10^var2;
 % nCls = length(unique(Y));
 nCls = size(Y, 1);
-save('temp1', 'X');
 [~, F] = UFSELM(X', L, nCls, var1, var2, nNrn);
 [~, labels] = max(F,[],2);
 end
