@@ -10,6 +10,7 @@ fail_on_error = params.fail_on_error;
 params = rmfield(params, 'num_runs');
 params = rmfield(params, 'fail_on_error');
 
+time_grid = [];
 param_grid = generate_tunable_param_grid(params);
 accuracies = cell(num_runs*numel(param_grid), 1);
 total_runs = num_runs * numel(param_grid);
@@ -41,14 +42,15 @@ parfor (ii = 1:total_runs, num_workers)
         result(4:6) = compute_f(gt, labels');
         result(7) = RandIndex(gt, labels);
     end
-    accuracies{ii} = result;
+    temptime = toc(tii);
+    accuracies{ii} = [result, temptime];
 %     fprintf('Done experiment %d/%d in %.2fs, accuracy: %.4f, nmi: %.4f, purity: %.4f, parameter:\n',...
 %         ii, total_runs, toc(tii), result(1), result(2), result(3));
     fprintf('Done experiment %d/%d in %.2fs, accuracy: %.4f, nmi: %.4f, purity: %.4f, precision: %.4f, recall: %.4f, F-score: %.4f, ARI: %.4f, parameter:\n',...
-        ii, total_runs, toc(tii), result(1), result(2), result(3), result(5), result(5), result(4), result(7));
+        ii, total_runs, temptime, result(1), result(2), result(3), result(5), result(5), result(4), result(7));
     disp(param_grid(c));
 end
-results_mat = zeros(num_runs, numel(param_grid), 7);
+results_mat = zeros(num_runs, numel(param_grid), 8);
 for ii = 1:total_runs
     [r, c] = ind2sub([num_runs, numel(param_grid)], ii);
     results_mat(r, c, 1:length(accuracies{ii})) = accuracies{ii};

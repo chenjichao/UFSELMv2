@@ -75,13 +75,14 @@ func_handle = eval(sprintf('@run%s', algo_name));
 
 %% Do actual training
 % nun_runs x param_sets x 3 (ACC/NMI/Purity)
+running_time = [];
 tt = tic;
 [results_mat, param_grid] = meta_runner(func_handle, X, Y, params);
 fprintf('Done %s on %s in %.2fs.\n', algo_name, dataset_name, toc(tt));
 
 fprintf('\n\n=================== Final Results of %s on %s =====================\n\n', algo_name, dataset_name);
-acc_record = zeros(numel(param_grid), 7);
-std_record = zeros(numel(param_grid), 7);
+acc_record = zeros(numel(param_grid), 8);
+std_record = zeros(numel(param_grid), 8);
 for i = 1:numel(param_grid)
     results_i = results_mat(:, i, :);
     mean_i = squeeze(mean(results_i, 1));
@@ -94,11 +95,13 @@ for i = 1:numel(param_grid)
     fprintf('REC: %.4f (+-%.4f)\n', mean_i(6), std_i(6));
     fprintf('F: %.4f (+-%.4f)\n', mean_i(4), std_i(4));
     fprintf('ARI: %.4f (+-%.4f)\n', mean_i(7), std_i(7));
+    fprintf('Avg running time: %.2f', mean_i(8));
     disp(param_grid(i));
     acc_record(i, :) = mean_i;
     std_record(i, :) = std_i;
 end
 [results_highest, selected] = max(acc_record, [], 1);
+avg_run_time = mean(acc_record, 1);
 % results_std = [std_record(selected(1), 1), std_record(selected(2), 2), std_record(selected(3), 3)];
 results_std = [std_record(selected(1), 1), std_record(selected(2), 2), std_record(selected(3), 3), std_record(selected(5), 5), std_record(selected(6), 6), std_record(selected(4), 4), std_record(selected(7), 7)];
 fprintf('Highest accuracy for %s on %s over %d runs among %d parameter sets: %.4f(+-%.4f), parameters:\n', ...
@@ -144,6 +147,7 @@ fprintf('for recording:\n%.4f(+-%.4f)\n%.4f(+-%.4f)\n%.4f(+-%.4f)\n%.4f(+-%.4f)\
     results_highest(6), results_std(6), ...
     results_highest(4), results_std(4), ...
     results_highest(7), results_std(7));
+fprintf('average running time: %0.2f', avg_run_time(8));
 
 if exist(cache_path, 'dir')
     save(fullfile(cache_path, sprintf('results-%s-%s-%s.mat', algo_name, dataset_name, time_stamp)), 'results_mat', 'param_grid');
