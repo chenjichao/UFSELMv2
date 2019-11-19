@@ -198,9 +198,7 @@ end
 function labels = runUFSELM(X, Y, params)
 
 nNbr = getfield_with_default(params, 'nNbr', 10);
-
 selftune = getfield_with_default(params, 'selftune', false);
-
 if selftune
     lapla_norm = getfield_with_default(params, 'lapla_norm', true);
     [A, ~] = selftuning(X', nNbr);
@@ -221,6 +219,38 @@ end
 nNrn = getfield_with_default(params, 'nNrn', 1024);
 var1 = getfield_with_default(params, 'var1', 6);
 var1 = 10^var1;
+var2 = getfield_with_default(params, 'var2', -6);
+var2 = 10^var2;
+% nCls = length(unique(Y));
+nCls = size(Y, 1);
+[~, F] = UFSELM(X', L, nCls, var1, var2, nNrn);
+[~, labels] = max(F,[],2);
+end
+
+%% ------------------------------------------------------------------------
+function labels = runUFSELM0(X, Y, params)
+
+nNbr = getfield_with_default(params, 'nNbr', 10);
+selftune = getfield_with_default(params, 'selftune', false);
+if selftune
+    lapla_norm = getfield_with_default(params, 'lapla_norm', true);
+    [A, ~] = selftuning(X', nNbr);
+    L = Adjacency2Laplacian(A, lapla_norm);
+else
+    options.NN = nNbr;
+    options.GraphDistanceFunction = getfield_with_default(params, ...
+        'GDF', 'euclidean');
+% options.GraphDistanceFunction: 'euclidean' | 'cosine'
+    options.GraphWeights = getfield_with_default(params, 'GW', 'distance');
+% options.GraphWeights: 'distance' | 'heat'
+    options.LaplacianNormalize=1;
+    options.LaplacianDegree=1;
+    options.GraphWeightParam = 1;
+    L = laplacian(options, X');
+end
+
+nNrn = getfield_with_default(params, 'nNrn', 1024);
+var1 = 0;
 var2 = getfield_with_default(params, 'var2', -6);
 var2 = 10^var2;
 % nCls = length(unique(Y));
